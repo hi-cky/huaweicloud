@@ -25,8 +25,7 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 func (p *Provider) Provision(ctx caddy.Context) error {
 	p.Provider.AccessKeyId = caddy.NewReplacer().ReplaceAll(p.Provider.AccessKeyId, "")
 	p.Provider.SecretAccessKey = caddy.NewReplacer().ReplaceAll(p.Provider.SecretAccessKey, "")
-	p.Provider.ProjectID = caddy.NewReplacer().ReplaceAll(p.Provider.ProjectID, "")
-	p.Provider.Region = caddy.NewReplacer().ReplaceAll(p.Provider.Region, "")
+	p.Provider.RegionId = caddy.NewReplacer().ReplaceAll(p.Provider.RegionId, "")
 	return nil
 }
 
@@ -35,8 +34,7 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 //	huaweicloud {
 //	    access_key_id <access_key_id>
 //	    secret_access_key <secret_access_key>
-//	    project_id <project_id>
-//	    region <region>
+//	    region_id <region_id>
 //	}
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
@@ -61,19 +59,10 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				if d.NextArg() {
 					return d.ArgErr()
 				}
-			case "project_id":
-				if !d.NextArg() {
-					return d.ArgErr()
-				}
-				p.Provider.ProjectID = d.Val()
+			case "region_id":
 				if d.NextArg() {
-					return d.ArgErr()
+					p.Provider.RegionId = d.Val()
 				}
-			case "region":
-				if !d.NextArg() {
-					return d.ArgErr()
-				}
-				p.Provider.Region = d.Val()
 				if d.NextArg() {
 					return d.ArgErr()
 				}
@@ -81,12 +70,12 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				return d.Errf("unrecognized subdirective '%s'", d.Val())
 			}
 		}
-	}
-	if p.Provider.AccessKeyId == "" || p.Provider.SecretAccessKey == "" || p.Provider.ProjectID == "" || p.Provider.Region == "" {
-		return d.Err("missing access_key_id, secret_access_key, project_id, or region")
+	if p.Provider.AccessKeyId == "" || p.Provider.SecretAccessKey == "" || p.Provider.RegionId == "" {
+		return d.Err("missing access_key_id, secret_access_key, or region_id")
 	}
 	return nil
 }
+
 
 // Interface guards
 var (
