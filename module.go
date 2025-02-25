@@ -25,6 +25,8 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 func (p *Provider) Provision(ctx caddy.Context) error {
 	p.Provider.AccessKeyId = caddy.NewReplacer().ReplaceAll(p.Provider.AccessKeyId, "")
 	p.Provider.SecretAccessKey = caddy.NewReplacer().ReplaceAll(p.Provider.SecretAccessKey, "")
+	p.Provider.ProjectID = caddy.NewReplacer().ReplaceAll(p.Provider.ProjectID, "")
+	p.Provider.Region = caddy.NewReplacer().ReplaceAll(p.Provider.Region, "")
 	return nil
 }
 
@@ -33,6 +35,8 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 //	huaweicloud {
 //	    access_key_id <access_key_id>
 //	    secret_access_key <secret_access_key>
+//	    project_id <project_id>
+//	    region <region>
 //	}
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
@@ -42,16 +46,34 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
 			switch d.Val() {
 			case "access_key_id":
-				if d.NextArg() {
-					p.Provider.AccessKeyId = d.Val()
+				if !d.NextArg() {
+					return d.ArgErr()
 				}
+				p.Provider.AccessKeyId = d.Val()
 				if d.NextArg() {
 					return d.ArgErr()
 				}
 			case "secret_access_key":
-				if d.NextArg() {
-					p.Provider.SecretAccessKey = d.Val()
+				if !d.NextArg() {
+					return d.ArgErr()
 				}
+				p.Provider.SecretAccessKey = d.Val()
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "project_id":
+				if !d.NextArg() {
+					return d.ArgErr()
+				}
+				p.Provider.ProjectID = d.Val()
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "region":
+				if !d.NextArg() {
+					return d.ArgErr()
+				}
+				p.Provider.Region = d.Val()
 				if d.NextArg() {
 					return d.ArgErr()
 				}
@@ -60,8 +82,8 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			}
 		}
 	}
-	if p.Provider.AccessKeyId == "" || p.Provider.SecretAccessKey == "" {
-		return d.Err("missing access_key_id or secret_access_key")
+	if p.Provider.AccessKeyId == "" || p.Provider.SecretAccessKey == "" || p.Provider.ProjectID == "" || p.Provider.Region == "" {
+		return d.Err("missing access_key_id, secret_access_key, project_id, or region")
 	}
 	return nil
 }
