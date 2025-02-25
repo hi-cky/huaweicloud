@@ -70,10 +70,11 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				return d.Errf("unrecognized subdirective '%s'", d.Val())
 			}
 		}
-	if p.Provider.AccessKeyId == "" || p.Provider.SecretAccessKey == "" || p.Provider.RegionId == "" {
-		return d.Err("missing access_key_id, secret_access_key, or region_id")
+		if p.Provider.AccessKeyId == "" || p.Provider.SecretAccessKey == "" || p.Provider.RegionId == "" {
+			return d.Err("missing access_key_id, secret_access_key, or region_id")
+		}
+		return nil
 	}
-	return nil
 }
 
 
