@@ -1,4 +1,4 @@
-module github.com/caddy-dns/huaweicloud
+module github.com/hi-cky/huaweicloud
 
 go 1.23
 
